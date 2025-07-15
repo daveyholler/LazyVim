@@ -32,8 +32,8 @@ return {
       button.opts.hl_shortcut = "AlphaShortcut"
     end
     dashboard.section.header.opts.hl = "AlphaHeader"
-    dashboard.section.buttons.opts.hl = "AlphaButtons"
     dashboard.section.footer.opts.hl = "AlphaFooter"
+    dashboard.section.buttons.opts.hl = "AlphaButtons"
     dashboard.opts.layout[1].val = 8
     return dashboard
   end,
@@ -58,11 +58,12 @@ return {
       callback = function()
         math.randomseed(os.time())
         local quotes = {
-          "Till the ground you\'ve been given",
-          'Fear and hope only have the power we give them in our lives',
-          'Its too dangerous to play clarinet badly out here in the wilderness',
-          'That\'s a bold strategy, Cotton. Let\'s see if it pays off for him.',
-          'Eww, David!'
+          "Till the ground you've been given",
+          "Fear and hope only have the power we give them in our lives",
+          "Its too dangerous to play clarinet badly out here in the wilderness",
+          "That's a bold strategy, Cotton. Let's see if it pays off for him.",
+          "Smaisle and stay a waisle!",
+          "Eww, David!",
         }
         local stats = require("lazy").stats()
         local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)

@@ -1,0 +1,17 @@
+local quotes_module = {}
+
+math.randomseed(os.time())
+
+local quotes = {
+  "Till the ground you've been given",
+  "Fear and hope only have the power we give them in our lives",
+  "Its too dangerous to play clarinet badly out here in the wilderness",
+  "That's a bold strategy, Cotton. Let's see if it pays off for him.",
+  "Eww, David!"
+}
+
+function quotes_module.get_random_quote()
+  return quotes[math.random(#quotes)]
+end
+
+return quotes_module

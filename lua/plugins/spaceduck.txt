@@ -1,0 +1,132 @@
+return {
+  -- Install the Spaceduck colorscheme
+  {
+    "pineapplegiant/spaceduck",
+    branch = "main",
+    lazy = false,    -- Load immediately since it's a colorscheme
+    priority = 1000, -- High priority to load before other plugins
+  },
+
+  -- Configure LazyVim to use Spaceduck as the default colorscheme
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "spaceduck",
+    },
+  },
+
+  -- Optional: Configure lualine to use the spaceduck theme
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      opts.options = opts.options or {}
+      opts.options.theme = "spaceduck"
+      return opts
+    end,
+  },
+
+  -- Optional: If you want to ensure proper terminal colors
+  {
+    "LazyVim/LazyVim",
+    opts = function()
+      -- Enable true color support
+      if vim.fn.has("termguicolors") == 1 then
+        vim.opt.termguicolors = true
+      end
+    end,
+  },
+
+  -- Extend Spaceduck theme to remove backgrounds for transparency
+  {
+    "pineapplegiant/spaceduck",
+    opts = {},
+    config = function()
+      -- Apply the colorscheme first
+      vim.cmd([[colorscheme spaceduck]])
+
+      -- Custom highlight overrides for transparency
+      local function apply_transparent_highlights()
+        -- First, let's try the most common Snacks highlight groups
+        local snacks_groups = {
+          "SnacksNotifierInfo",
+          "SnacksNotifierWarn",
+          "SnacksNotifierDebug",
+          "SnacksNotifierError",
+          "SnacksNotifierTrace",
+          "SnacksExplorer",
+          "SnacksExplorerDir",
+          "SnacksExplorerFile",
+          "SnacksExplorerIcon",
+          "SnacksExplorerIndent",
+          "SnacksTreeDir",
+          "SnacksTreeFile",
+          "SnacksTreeNormal",
+          "SnacksTreeTitle",
+          "SnacksDashboard",
+          "SnacksPickerNormal",
+        }
+
+        for _, group in ipairs(snacks_groups) do
+          vim.api.nvim_set_hl(0, group, { bg = "NONE" })
+        end
+
+        -- Also try some generic highlight groups that might be used
+        local generic_groups = {
+          "Normal",
+          "NormalFloat",
+          "FloatBorder",
+          "Pmenu",
+          "PmenuSbar",
+          "SignColumn",
+          "FoldColumn",
+          "LineNr",
+          "CursorLineNr",
+          "VertSplit",
+          "WinSeparator",
+        }
+
+        -- Get current colors but remove background
+        for _, group in ipairs(generic_groups) do
+          local hl = vim.api.nvim_get_hl(0, { name = group })
+          if hl then
+            hl.bg = nil -- Remove background
+            vim.api.nvim_set_hl(0, group, hl)
+          end
+        end
+
+        -- Debug function to help identify highlight groups
+        -- You can call this with :lua IdentifyHighlight() when cursor is in the explorer
+        _G.IdentifyHighlight = function()
+          local line = vim.fn.line('.')
+          local col = vim.fn.col('.')
+          local hl_groups = vim.fn.synstack(line, col)
+
+          print("Highlight groups at cursor:")
+          for i = 1, #hl_groups do
+            local group_name = vim.fn.synIDattr(hl_groups[i], "name")
+            print("- " .. group_name)
+          end
+
+          -- Also check treesitter highlights
+          local buf = vim.api.nvim_get_current_buf()
+          local ts_hl = vim.treesitter.get_captures_at_cursor(buf)
+          if ts_hl and #ts_hl > 0 then
+            print("Treesitter captures:")
+            for _, capture in ipairs(ts_hl) do
+              print("- @" .. capture)
+            end
+          end
+        end
+      end
+
+      -- Apply highlights after colorscheme loads
+      apply_transparent_highlights()
+
+      -- Reapply highlights when colorscheme changes
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "spaceduck",
+        callback = apply_transparent_highlights,
+      })
+    end,
+  },
+}
